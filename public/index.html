@@ -1,0 +1,935 @@
+<!-- index.html — единый файл: Detection / Settings / Help
+     ✅ Добавлен полноценный Detection (как на первом скрине)
+     ✅ Settings и Help — как на твоих скринах
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Vision Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#070707;
+      --panelTop: rgba(255,255,255,.04);
+      --panelBottom: rgba(255,255,255,.02);
+      --cardTop: rgba(255,255,255,.05);
+      --cardBottom: rgba(255,255,255,.02);
+      --stroke: rgba(255,255,255,.07);
+      --stroke2: rgba(255,255,255,.06);
+
+      --text:#f3f3f3;
+      --muted: rgba(255,255,255,.62);
+      --muted2: rgba(255,255,255,.42);
+
+      --green:#18f39a;
+      --green2:#10d98a;
+      --track:#07091b;
+
+      --shadow: 0 18px 40px rgba(0,0,0,.55);
+      --shadow2: 0 14px 30px rgba(0,0,0,.45);
+
+      --r16:16px;
+      --r18:18px;
+      --r22:22px;
+    }
+
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 520px at 72% -10%, rgba(24,243,154,.13), transparent 60%),
+        radial-gradient(900px 560px at 12% 0%, rgba(24,243,154,.08), transparent 60%),
+        var(--bg);
+      color:var(--text);
+    }
+
+    .wrap{
+      width:min(1024px, 94vw);
+      margin:18px auto 28px;
+    }
+
+    /* ---------- TOP BAR (tabs) ---------- */
+    .topbar{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      padding:14px;
+      border-radius:22px;
+      background: linear-gradient(180deg, var(--panelTop), var(--panelBottom));
+      border:1px solid rgba(255,255,255,.06);
+      box-shadow: 0 10px 24px rgba(0,0,0,.35);
+    }
+    .tab{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:14px 18px;
+      border-radius:16px;
+      background:#1a1a1a;
+      border:1px solid rgba(255,255,255,.06);
+      color:#dcdcdc;
+      font-weight:600;
+      letter-spacing:.2px;
+      user-select:none;
+      cursor:pointer;
+      transition: transform .06s ease, filter .12s ease;
+    }
+    .tab:active{ transform: translateY(1px) scale(.99) }
+    .tab svg{ width:18px; height:18px; opacity:.95 }
+    .tab.active{
+      background: linear-gradient(180deg, rgba(24,243,154,.95), rgba(16,217,138,.92));
+      color:#082016;
+      border-color: rgba(24,243,154,.35);
+      box-shadow: 0 10px 28px rgba(24,243,154,.22);
+    }
+
+    /* ---------- Sections switching ---------- */
+    .section{ display:none; }
+    .section.active{ display:block; }
+
+    /* ---------- Generic titles ---------- */
+    .pageTitle{
+      font-size:42px;
+      font-weight:700;
+      margin:22px 6px 18px;
+      letter-spacing:.2px;
+    }
+    .subTitle{
+      font-size:30px;
+      font-weight:700;
+      margin:26px 6px 14px;
+      letter-spacing:.2px;
+    }
+
+    /* ---------- Cards ---------- */
+    .card{
+      border-radius:22px;
+      background: linear-gradient(180deg, var(--cardTop), var(--cardBottom));
+      border:1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      padding:22px;
+      margin:0 6px 22px;
+    }
+    .cardHeader{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      font-size:26px;
+      font-weight:700;
+      margin-bottom:18px;
+    }
+    .iconGreen{
+      width:28px;height:28px;
+      color:var(--green);
+      filter: drop-shadow(0 10px 18px rgba(24,243,154,.18));
+      flex:0 0 auto;
+    }
+
+    /* =======================================================================
+       DETECTION (как на первом скрине)
+       ======================================================================= */
+    .detWrap{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:22px;
+      align-items:start;
+    }
+    .detLeft{ display:flex; flex-direction:column; gap:16px; }
+    .detH1{
+      font-size:40px;
+      font-weight:700;
+      letter-spacing:.2px;
+      margin:6px 0 2px;
+    }
+    .controlsRow{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      padding:14px 18px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.07);
+      background:#1b1b1b;
+      color:#e7e7e7;
+      font-weight:600;
+      box-shadow: 0 10px 18px rgba(0,0,0,.28);
+      cursor:pointer;
+      user-select:none;
+      transition: transform .06s ease, background .12s ease, border-color .12s ease;
+    }
+    .btn:active{transform: translateY(1px) scale(.99)}
+    .btn svg{width:20px;height:20px}
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(24,243,154,.95), rgba(16,217,138,.92));
+      color:#082016;
+      border-color: rgba(24,243,154,.35);
+      box-shadow: 0 14px 28px rgba(24,243,154,.18);
+    }
+    .voicePill{
+      margin-left:auto;
+      display:inline-flex;
+      align-items:center;
+      gap:12px;
+      padding:14px 18px;
+      border-radius:16px;
+      border:1px solid rgba(24,243,154,.35);
+      background: linear-gradient(180deg, rgba(24,243,154,.95), rgba(16,217,138,.92));
+      color:#082016;
+      font-weight:700;
+      box-shadow: 0 14px 28px rgba(24,243,154,.18);
+      user-select:none;
+      cursor:pointer;
+    }
+    .voicePill svg{width:20px;height:20px}
+
+    .viewer{
+      position:relative;
+      border-radius:22px;
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.07);
+      padding:18px;
+      min-height:330px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .statusBadge{
+      position:absolute;
+      left:22px;
+      top:18px;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:12px 16px;
+      border-radius:999px;
+      background: linear-gradient(180deg, rgba(24,243,154,.95), rgba(16,217,138,.92));
+      color:#082016;
+      font-weight:700;
+      border:1px solid rgba(24,243,154,.35);
+      box-shadow: 0 14px 28px rgba(24,243,154,.16);
+      z-index:2;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px;
+      background:#0b2b1c;
+      box-shadow: 0 0 0 6px rgba(11,43,28,.14);
+    }
+    .camCenter{
+      position:absolute;
+      inset:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:16px;
+      text-align:center;
+      padding:22px;
+    }
+    .camIcon{
+      width:86px;height:86px;
+      display:grid;place-items:center;
+    }
+    .camIcon svg{width:86px;height:86px}
+    .camTitle{
+      color:rgba(255,255,255,.62);
+      font-size:22px;
+      font-weight:500;
+    }
+    .camSub{
+      color:rgba(255,255,255,.38);
+      font-size:16px;
+      font-weight:500;
+    }
+
+    .detRight .h2{
+      font-size:34px;
+      font-weight:700;
+      margin:10px 0 14px;
+    }
+    .alertBox{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.07);
+      border-radius:18px;
+      padding:22px;
+      color:rgba(255,255,255,.55);
+      min-height:110px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      box-shadow: var(--shadow2);
+    }
+
+    /* =======================================================================
+       SETTINGS (как на скрине)
+       ======================================================================= */
+    .labelRow{
+      font-size:18px;
+      color:var(--muted);
+      margin:18px 0 12px;
+      font-weight:500;
+    }
+    .sliderWrap{
+      margin-top:6px;
+      margin-bottom:22px;
+    }
+    input[type="range"]{
+      -webkit-appearance:none;
+      appearance:none;
+      width:100%;
+      height:14px;
+      border-radius:999px;
+      background: var(--track);
+      outline:none;
+      border:1px solid rgba(255,255,255,.06);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
+    }
+    input[type="range"]::-webkit-slider-runnable-track{
+      height:14px;
+      border-radius:999px;
+      background: var(--track);
+    }
+    input[type="range"]::-webkit-slider-thumb{
+      -webkit-appearance:none;
+      appearance:none;
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:#ffffff;
+      border:2px solid rgba(0,0,0,.15);
+      box-shadow: 0 8px 16px rgba(0,0,0,.35);
+      margin-top:-2px;
+    }
+    input[type="range"]::-moz-range-track{
+      height:14px;
+      border-radius:999px;
+      background: var(--track);
+    }
+    input[type="range"]::-moz-range-thumb{
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:#ffffff;
+      border:2px solid rgba(0,0,0,.15);
+      box-shadow: 0 8px 16px rgba(0,0,0,.35);
+    }
+
+    .langRow{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      color:var(--muted);
+      font-size:18px;
+      font-weight:600;
+      margin:10px 0 14px;
+    }
+    .langBox{
+      width:100%;
+      height:62px;
+      border-radius:16px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.06);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.22);
+    }
+
+    .option{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:18px 18px;
+      border-radius:16px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.06);
+      margin-top:14px;
+    }
+    .optLeft{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      font-size:18px;
+      font-weight:600;
+      color:rgba(255,255,255,.85);
+    }
+    .optIcon{
+      width:22px;height:22px;
+      color:var(--green);
+      filter: drop-shadow(0 10px 16px rgba(24,243,154,.16));
+    }
+
+    .switch{
+      position:relative;
+      width:44px;
+      height:24px;
+      display:inline-block;
+      flex:0 0 auto;
+    }
+    .switch input{display:none}
+    .sw{
+      position:absolute;
+      inset:0;
+      background:#0b0b1b;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:999px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.35);
+      transition:.15s ease;
+      cursor:pointer;
+    }
+    .sw:before{
+      content:"";
+      position:absolute;
+      width:16px;height:16px;
+      left:4px;
+      top:50%;
+      transform:translateY(-50%);
+      background:#ffffff;
+      border-radius:999px;
+      box-shadow: 0 8px 16px rgba(0,0,0,.35);
+      transition:.15s ease;
+    }
+    .switch input:checked + .sw:before{
+      transform:translate(20px,-50%);
+    }
+
+    .save{
+      margin: 10px 6px 0;
+      padding:20px 18px;
+      width:calc(100% - 12px);
+      border:none;
+      border-radius:18px;
+      font-size:22px;
+      font-weight:500;
+      background: linear-gradient(180deg, rgba(24,243,154,.95), rgba(16,217,138,.92));
+      color:#082016;
+      box-shadow: 0 18px 32px rgba(24,243,154,.16);
+      cursor:pointer;
+    }
+    .save:active{ transform: translateY(1px); }
+
+    /* =======================================================================
+       HELP (как на скрине)
+       ======================================================================= */
+    .welcomeRow{
+      display:flex;
+      gap:18px;
+      align-items:flex-start;
+    }
+    .welcomeIcon{
+      width:56px;height:56px;
+      border-radius:14px;
+      background: linear-gradient(180deg, rgba(24,243,154,.95), rgba(16,217,138,.92));
+      border:1px solid rgba(24,243,154,.35);
+      display:grid;
+      place-items:center;
+      box-shadow: 0 14px 28px rgba(24,243,154,.18);
+      flex:0 0 auto;
+    }
+    .welcomeIcon svg{ width:26px; height:26px; color:#082016; }
+    .welcomeTitle{
+      font-size:26px;
+      font-weight:700;
+      margin:2px 0 10px;
+    }
+    .welcomeText{
+      color:var(--muted);
+      line-height:1.55;
+      font-size:15px;
+      max-width: 760px;
+    }
+
+    .featuresGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:18px;
+      padding: 0 6px;
+    }
+    .featureCard{
+      border-radius:22px;
+      background: linear-gradient(180deg, var(--cardTop), var(--cardBottom));
+      border:1px solid var(--stroke);
+      box-shadow: var(--shadow2);
+      padding:20px;
+      min-height:140px;
+    }
+    .featureHead{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-size:18px;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+    .featureHead svg{ width:22px; height:22px; color:var(--green); }
+    .featureText{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.55;
+      max-width: 420px;
+    }
+
+    .steps{
+      margin: 0 6px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .step{
+      border-radius:22px;
+      background: linear-gradient(180deg, var(--cardTop), var(--cardBottom));
+      border:1px solid var(--stroke);
+      box-shadow: var(--shadow2);
+      padding:22px;
+      display:flex;
+      gap:18px;
+      align-items:center;
+    }
+    .num{
+      width:56px;height:56px;
+      border-radius:999px;
+      background: linear-gradient(180deg, rgba(24,243,154,.95), rgba(16,217,138,.92));
+      border:1px solid rgba(24,243,154,.35);
+      box-shadow: 0 14px 28px rgba(24,243,154,.16);
+      display:grid;
+      place-items:center;
+      color:#082016;
+      font-weight:800;
+      font-size:22px;
+      flex:0 0 auto;
+    }
+    .stepTitle{ font-size:18px; font-weight:800; margin-bottom:6px; }
+    .stepText{ color:var(--muted); font-size:14px; line-height:1.55; }
+
+    .safety{
+      margin: 18px 6px 0;
+      border-radius:22px;
+      background: linear-gradient(180deg, rgba(24,243,154,.07), rgba(24,243,154,.02));
+      border:2px solid rgba(24,243,154,.55);
+      box-shadow: 0 18px 40px rgba(0,0,0,.50);
+      padding:22px;
+      display:flex;
+      gap:18px;
+      align-items:flex-start;
+    }
+    .safetyIcon{
+      width:56px;height:56px;
+      border-radius:14px;
+      background: linear-gradient(180deg, rgba(24,243,154,.95), rgba(16,217,138,.92));
+      border:1px solid rgba(24,243,154,.35);
+      display:grid;
+      place-items:center;
+      box-shadow: 0 14px 28px rgba(24,243,154,.18);
+      flex:0 0 auto;
+    }
+    .safetyIcon svg{ width:26px; height:26px; color:#082016; }
+    .safetyTitle{
+      font-size:22px;
+      font-weight:800;
+      margin:4px 0 12px;
+    }
+    .safetyList{
+      margin:0;
+      padding-left:20px;
+      color:var(--muted);
+      line-height:1.75;
+      font-size:14px;
+    }
+    .safetyList li::marker{ color: rgba(24,243,154,.9); }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 900px){
+      .detWrap{ grid-template-columns: 1fr; }
+      .voicePill{ margin-left:0; width:100%; justify-content:center; }
+      .featuresGrid{ grid-template-columns: 1fr; }
+      .pageTitle{ font-size:38px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <!-- Top tabs -->
+    <div class="topbar">
+      <div class="tab active" data-tab="detection">
+        <!-- eye -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
+          <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"/>
+        </svg>
+        Detection
+      </div>
+
+      <div class="tab" data-tab="settings">
+        <!-- gear -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/>
+          <path d="M19.4 15a8.1 8.1 0 0 0 .1-1l2-1.2-2-3.4-2.3.7a7.8 7.8 0 0 0-1.7-1L13.9 4h-3.9L9.4 7.9a7.8 7.8 0 0 0-1.7 1l-2.3-.7-2 3.4 2 1.2a8.1 8.1 0 0 0 .1 1 8.1 8.1 0 0 0-.1 1l-2 1.2 2 3.4 2.3-.7a7.8 7.8 0 0 0 1.7 1l.6 3.9h3.9l.6-3.9a7.8 7.8 0 0 0 1.7-1l2.3.7 2-3.4-2-1.2a8.1 8.1 0 0 0-.1-1Z"/>
+        </svg>
+        Settings
+      </div>
+
+      <div class="tab" data-tab="help">
+        <!-- help -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 18h.01"/>
+          <path d="M9.1 9a3 3 0 1 1 5.8 1c0 2-3 2-3 4"/>
+          <path d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10Z"/>
+        </svg>
+        Help
+      </div>
+    </div>
+
+    <!-- ===================== DETECTION ===================== -->
+    <section id="detection" class="section active">
+      <div class="detWrap">
+        <div class="detLeft">
+          <div class="detH1">Object Detection</div>
+
+          <div class="controlsRow">
+            <div class="btn primary">
+              <!-- camera -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 7h3l2-2h6l2 2h3v12H4V7Z"/>
+                <path d="M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
+              </svg>
+              Live Camera
+            </div>
+
+            <div class="btn">
+              <!-- upload -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v12"/>
+                <path d="M7 8l5-5 5 5"/>
+                <path d="M5 21h14"/>
+              </svg>
+              Upload Photo
+            </div>
+
+            <div class="voicePill" id="voiceToggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 5 6 9H2v6h4l5 4V5Z"/>
+                <path d="M15.5 8.5a4.5 4.5 0 0 1 0 7"/>
+                <path d="M18.5 5.5a9 9 0 0 1 0 13"/>
+              </svg>
+              <span id="voiceText">Voice ON</span>
+            </div>
+          </div>
+
+          <div class="viewer">
+            <div class="statusBadge">
+              <span class="dot"></span>
+              AI Detection Active
+            </div>
+
+            <div class="camCenter">
+              <div class="camIcon" aria-hidden="true">
+                <!-- pink camera off -->
+                <svg viewBox="0 0 120 120" fill="none">
+                  <path d="M30 45h13l9-10h32l9 10h13c5 0 9 4 9 9v38c0 5-4 9-9 9H30c-5 0-9-4-9-9V54c0-5 4-9 9-9Z"
+                        stroke="#ff2b74" stroke-width="8" stroke-linejoin="round"/>
+                  <path d="M60 78c9.5 0 17-7.5 17-17S69.5 44 60 44 43 51.5 43 61s7.5 17 17 17Z"
+                        stroke="#ff2b74" stroke-width="8"/>
+                  <path d="M28 92 92 28" stroke="#ff2b74" stroke-width="10" stroke-linecap="round"/>
+                </svg>
+              </div>
+
+              <div class="camTitle">Camera access denied or unavailable</div>
+              <div class="camSub">Using simulated detection mode</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detRight">
+          <div class="h2">Live Alerts</div>
+          <div class="alertBox">Waiting for detections...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SETTINGS ===================== -->
+    <section id="settings" class="section">
+      <div class="pageTitle">Settings</div>
+
+      <div class="card">
+        <div class="cardHeader">
+          <!-- speaker -->
+          <svg class="iconGreen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5 6 9H2v6h4l5 4V5Z"/>
+            <path d="M15.5 8.5a4.5 4.5 0 0 1 0 7"/>
+            <path d="M18.5 5.5a9 9 0 0 1 0 13"/>
+          </svg>
+          Voice Settings
+        </div>
+
+        <div class="labelRow">Voice Volume: <span id="volLabel">80%</span></div>
+        <div class="sliderWrap">
+          <input id="vol" type="range" min="0" max="100" value="80" />
+        </div>
+
+        <div class="labelRow">Speech Speed: <span id="spdLabel">Normal</span></div>
+        <div class="sliderWrap">
+          <input id="spd" type="range" min="0" max="100" value="50" />
+        </div>
+
+        <div class="langRow">
+          <!-- globe -->
+          <svg class="iconGreen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10Z"/>
+            <path d="M2 12h20"/>
+            <path d="M12 2c3 3 3 17 0 20"/>
+          </svg>
+          Language
+        </div>
+        <div class="langBox"></div>
+      </div>
+
+      <div class="card">
+        <div class="cardHeader">
+          <!-- bell -->
+          <svg class="iconGreen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7"/>
+            <path d="M13.7 21a2 2 0 0 1-3.4 0"/>
+          </svg>
+          Notification Options
+        </div>
+
+        <div class="option">
+          <div class="optLeft">
+            <svg class="optIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 5 6 9H2v6h4l5 4V5Z"/>
+              <path d="M15.5 8.5a4.5 4.5 0 0 1 0 7"/>
+            </svg>
+            Voice Alerts
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked />
+            <span class="sw"></span>
+          </label>
+        </div>
+
+        <div class="option">
+          <div class="optLeft">
+            <svg class="optIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="7" y="2.5" width="10" height="19" rx="2"/>
+              <path d="M11 18h2"/>
+            </svg>
+            Vibration
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked />
+            <span class="sw"></span>
+          </label>
+        </div>
+
+        <div class="option">
+          <div class="optLeft">
+            <svg class="optIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/>
+            </svg>
+            Sound Alerts
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked />
+            <span class="sw"></span>
+          </label>
+        </div>
+      </div>
+
+      <button class="save" id="saveBtn">Save Settings</button>
+    </section>
+
+    <!-- ===================== HELP ===================== -->
+    <section id="help" class="section">
+      <div class="pageTitle">Help &amp; Guide</div>
+
+      <div class="card">
+        <div class="welcomeRow">
+          <div class="welcomeIcon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/>
+            </svg>
+          </div>
+
+          <div>
+            <div class="welcomeTitle">Welcome to AI Vision Assistant</div>
+            <div class="welcomeText">
+              This application uses advanced computer vision AI to help visually impaired users navigate their surroundings safely.
+              The system automatically detects objects, obstacles, and hazards, providing real-time voice guidance.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subTitle">Key Features</div>
+
+      <div class="featuresGrid">
+        <div class="featureCard">
+          <div class="featureHead">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 7h3l2-2h6l2 2h3v12H4V7Z"/>
+              <path d="M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
+            </svg>
+            Automatic Object Detection
+          </div>
+          <div class="featureText">
+            The AI continuously scans your surroundings using the camera and identifies objects, obstacles, and hazards in real-time.
+          </div>
+        </div>
+
+        <div class="featureCard">
+          <div class="featureHead">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 5 6 9H2v6h4l5 4V5Z"/>
+              <path d="M15.5 8.5a4.5 4.5 0 0 1 0 7"/>
+            </svg>
+            Voice Alerts
+          </div>
+          <div class="featureText">
+            Receive instant spoken notifications about detected objects, including their type and distance from you.
+          </div>
+        </div>
+
+        <div class="featureCard">
+          <div class="featureHead">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7"/>
+              <path d="M13.7 21a2 2 0 0 1-3.4 0"/>
+            </svg>
+            Multi-Modal Notifications
+          </div>
+          <div class="featureText">
+            Get alerts through voice, sound, and vibration to ensure you never miss important information.
+          </div>
+        </div>
+
+        <div class="featureCard">
+          <div class="featureHead">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/>
+              <path d="M19.4 15a8.1 8.1 0 0 0 .1-1l2-1.2-2-3.4-2.3.7a7.8 7.8 0 0 0-1.7-1L13.9 4h-3.9L9.4 7.9a7.8 7.8 0 0 0-1.7 1l-2.3-.7-2 3.4 2 1.2a8.1 8.1 0 0 0 .1 1 8.1 8.1 0 0 0-.1 1l-2 1.2 2 3.4 2.3-.7a7.8 7.8 0 0 0 1.7 1l.6 3.9h3.9l.6-3.9a7.8 7.8 0 0 0 1.7-1l2.3.7 2-3.4-2-1.2a8.1 8.1 0 0 0-.1-1Z"/>
+            </svg>
+            Customizable Settings
+          </div>
+          <div class="featureText">
+            Adjust voice volume, speech speed, and language preferences to suit your needs.
+          </div>
+        </div>
+      </div>
+
+      <div class="subTitle">How to Use</div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <div>
+            <div class="stepTitle">Allow Camera Access</div>
+            <div class="stepText">Grant permission for the app to access your device camera when prompted.</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">2</div>
+          <div>
+            <div class="stepTitle">Position Your Device</div>
+            <div class="stepText">Hold your device at chest level, pointing forward to scan the area ahead of you.</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">3</div>
+          <div>
+            <div class="stepTitle">Listen for Alerts</div>
+            <div class="stepText">The AI will automatically detect objects and provide voice guidance about your surroundings.</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">4</div>
+          <div>
+            <div class="stepTitle">Customize Settings</div>
+            <div class="stepText">Visit the Settings page to adjust voice preferences, language, and notification options.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="safety">
+        <div class="safetyIcon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2 20 6v6c0 5-3.5 9.5-8 10-4.5-.5-8-5-8-10V6l8-4Z"/>
+          </svg>
+        </div>
+
+        <div style="flex:1">
+          <div class="safetyTitle">Important Safety Information</div>
+          <ul class="safetyList">
+            <li>This app is an assistive tool and should not replace traditional mobility aids like canes or guide dogs.</li>
+            <li>Always use caution when navigating, especially in unfamiliar environments.</li>
+            <li>Ensure your device is fully charged before extended use.</li>
+            <li>Use headphones or earbuds in noisy environments for clearer voice guidance.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Tabs switching
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    const sections = Array.from(document.querySelectorAll('.section'));
+
+    function setActive(name){
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+      sections.forEach(s => s.classList.toggle('active', s.id === name));
+    }
+    tabs.forEach(t => t.addEventListener('click', () => setActive(t.dataset.tab)));
+
+    // Settings labels
+    const vol = document.getElementById('vol');
+    const volLabel = document.getElementById('volLabel');
+    const spd = document.getElementById('spd');
+    const spdLabel = document.getElementById('spdLabel');
+
+    function speedText(v){
+      if (v < 34) return 'Slow';
+      if (v < 67) return 'Normal';
+      return 'Fast';
+    }
+
+    if (vol && volLabel) vol.addEventListener('input', () => volLabel.textContent = `${vol.value}%`);
+    if (spd && spdLabel) spd.addEventListener('input', () => spdLabel.textContent = speedText(parseInt(spd.value,10)));
+
+    // Save button (visual)
+    const saveBtn = document.getElementById('saveBtn');
+    if (saveBtn){
+      saveBtn.addEventListener('click', () => {
+        saveBtn.textContent = 'Saved ✓';
+        setTimeout(() => saveBtn.textContent = 'Save Settings', 1200);
+      });
+    }
+
+    // Voice pill toggle (visual)
+    let voiceOn = true;
+    const voiceToggle = document.getElementById('voiceToggle');
+    const voiceText = document.getElementById('voiceText');
+    if (voiceToggle && voiceText){
+      voiceToggle.addEventListener('click', () => {
+        voiceOn = !voiceOn;
+        voiceText.textContent = voiceOn ? 'Voice ON' : 'Voice OFF';
+        voiceToggle.style.filter = voiceOn ? 'none' : 'grayscale(1) brightness(.85)';
+      });
+    }
+  </script>
+</body>
+</html>
